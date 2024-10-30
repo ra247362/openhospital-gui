@@ -63,7 +63,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		MessageBundle.getMessage("angal.common.group.txt").toUpperCase(),
 		MessageBundle.getMessage("angal.common.description.txt").toUpperCase(),
 		MessageBundle.getMessage("angal.userbrowser.locked.col").toUpperCase(),
-		MessageBundle.getMessage("angal.common.deleted.txt").toUpperCase() };
+		MessageBundle.getMessage("angal.common.deleted.col").toUpperCase() };
 	private final int[] pColumnWidth = { 70, 70, 150, 20, 20 };
 	private final JTable table;
 	private final UserBrowsing myFrame;
@@ -278,7 +278,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 			new ListSelectionListener() {
 
 				public void valueChanged(ListSelectionEvent e) {
-					if(table.getSelectedRow() >= 0) {
+					if (table.getSelectedRow() >= 0) {
 						User selected = (User) table.getValueAt(table.getSelectedRow(), -1);
 						buttonEdit.setEnabled(!selected.isDeleted());
 						buttonDelete.setEnabled(!selected.isDeleted());

@@ -40,7 +40,6 @@ import org.isf.generaldata.MessageBundle;
 import org.isf.menu.gui.GroupEdit.GroupListener;
 import org.isf.menu.manager.Context;
 import org.isf.menu.manager.UserBrowsingManager;
-import org.isf.menu.model.User;
 import org.isf.menu.model.UserGroup;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.gui.OHServiceExceptionUtil;
@@ -52,19 +51,19 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 	private static final long serialVersionUID = 1L;
 	private static final int DEFAULT_WIDTH = 200;
 	private static final int DEFAULT_HEIGHT = 150;
-	private int selectedrow;
-	private List<UserGroup> pGroup;
 	private final String[] pColumns = {
 		MessageBundle.getMessage("angal.common.group.txt").toUpperCase(),
 		MessageBundle.getMessage("angal.common.description.txt").toUpperCase(),
-		MessageBundle.getMessage("angal.common.deleted.txt").toUpperCase()
+		MessageBundle.getMessage("angal.common.deleted.col").toUpperCase()
 	};
 	private final int[] pColumnWidth = { 70, 100, 20 };
-	private UserGroup group;
 	private final DefaultTableModel model;
 	private final JTable table;
 	private final UserGroupBrowsing myFrame;
 	private final UserBrowsingManager userBrowsingManager = Context.getApplicationContext().getBean(UserBrowsingManager.class);
+	private int selectedrow;
+	private List<UserGroup> pGroup;
+	private UserGroup group;
 
 	public UserGroupBrowsing() {
 		myFrame = this;
@@ -149,7 +148,7 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 			new ListSelectionListener() {
 
 				public void valueChanged(ListSelectionEvent e) {
-					if(table.getSelectedRow() >= 0) {
+					if (table.getSelectedRow() >= 0) {
 						UserGroup selected = (UserGroup) table.getValueAt(table.getSelectedRow(), -1);
 						buttonEdit.setEnabled(!selected.isDeleted());
 						buttonPrivilege.setEnabled(!selected.isDeleted());

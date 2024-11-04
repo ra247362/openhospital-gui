@@ -32,6 +32,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.isf.generaldata.MessageBundle;
@@ -47,60 +49,39 @@ import org.isf.utils.jobjects.ModalJFrame;
 public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 
 	private static final long serialVersionUID = 1L;
-
-	@Override
-	public void groupInserted(AWTEvent e) {
-		pGroup.add(0, group);
-		((UserGroupBrowserModel) table.getModel()).fireTableDataChanged();
-		table.updateUI();
-		if (table.getRowCount() > 0) {
-			table.setRowSelectionInterval(0, 0);
-		}
-	}
-
-	@Override
-	public void groupUpdated(AWTEvent e) {
-		pGroup.set(selectedrow, group);
-		((UserGroupBrowserModel) table.getModel()).fireTableDataChanged();
-		table.updateUI();
-		if (table.getRowCount() > 0 && selectedrow > -1) {
-			table.setRowSelectionInterval(selectedrow, selectedrow);
-		}
-	}
-	
 	private static final int DEFAULT_WIDTH = 200;
 	private static final int DEFAULT_HEIGHT = 150;
+	private final String[] pColumns = {
+		MessageBundle.getMessage("angal.common.group.txt").toUpperCase(),
+		MessageBundle.getMessage("angal.common.description.txt").toUpperCase(),
+		MessageBundle.getMessage("angal.common.deleted.col").toUpperCase()
+	};
+	private final int[] pColumnWidth = { 70, 100, 20 };
+	private final DefaultTableModel model;
+	private final JTable table;
+	private final UserGroupBrowsing myFrame;
+	private final UserBrowsingManager userBrowsingManager = Context.getApplicationContext().getBean(UserBrowsingManager.class);
 	private int selectedrow;
 	private List<UserGroup> pGroup;
-	private String[] pColumns = {
-			MessageBundle.getMessage("angal.common.group.txt").toUpperCase(),
-			MessageBundle.getMessage("angal.common.description.txt").toUpperCase()
-	};
-	private int[] pColumnWidth = {70,  100};
 	private UserGroup group;
-	private DefaultTableModel model;
-	private JTable table;
-	
-	private UserGroupBrowsing myFrame;
-
-	private UserBrowsingManager userBrowsingManager = Context.getApplicationContext().getBean(UserBrowsingManager.class);
 
 	public UserGroupBrowsing() {
 		myFrame = this;
 		setTitle(MessageBundle.getMessage("angal.groupsbrowser.title"));
-		
+
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 		Toolkit kit = Toolkit.getDefaultToolkit();
 		Dimension screensize = kit.getScreenSize();
 		int pfrmWidth = screensize.width / 2;
 		int pfrmHeight = screensize.height / 4;
 		setBounds(screensize.width / 4, screensize.height / 4, pfrmWidth, pfrmHeight);
-		
+
 		model = new UserGroupBrowserModel();
 		table = new JTable(model);
 		table.getColumnModel().getColumn(0).setPreferredWidth(pColumnWidth[0]);
 		table.getColumnModel().getColumn(1).setPreferredWidth(pColumnWidth[1]);
-				
+		table.getColumnModel().getColumn(2).setPreferredWidth(pColumnWidth[2]);
+
 		add(new JScrollPane(table), BorderLayout.CENTER);
 
 		JPanel buttonPanel = new JPanel();
@@ -114,6 +95,7 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 		buttonPanel.add(buttonNew);
 
 		JButton buttonEdit = new JButton(MessageBundle.getMessage("angal.common.edit.btn"));
+		buttonEdit.setEnabled(false);
 		buttonEdit.setMnemonic(MessageBundle.getMnemonic("angal.common.edit.btn.key"));
 		buttonEdit.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -127,6 +109,7 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 		buttonPanel.add(buttonEdit);
 
 		JButton buttonPrivilege = new JButton(MessageBundle.getMessage("angal.groupsbrowser.groupmenu.btn"));
+		buttonPrivilege.setEnabled(false);
 		buttonPrivilege.setMnemonic(MessageBundle.getMnemonic("angal.groupsbrowser.groupmenu.btn.key"));
 		buttonPrivilege.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -139,6 +122,7 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 		buttonPanel.add(buttonPrivilege);
 
 		JButton buttonDelete = new JButton(MessageBundle.getMessage("angal.common.delete.btn"));
+		buttonDelete.setEnabled(false);
 		buttonDelete.setMnemonic(MessageBundle.getMnemonic("angal.common.delete.btn.key"));
 		buttonDelete.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -160,6 +144,21 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 		});
 		buttonPanel.add(buttonDelete);
 
+		table.getSelectionModel().addListSelectionListener(
+			new ListSelectionListener() {
+
+				public void valueChanged(ListSelectionEvent e) {
+					if (table.getSelectedRow() >= 0) {
+						UserGroup selected = (UserGroup) table.getValueAt(table.getSelectedRow(), -1);
+						buttonEdit.setEnabled(!selected.isDeleted());
+						buttonPrivilege.setEnabled(!selected.isDeleted());
+						buttonDelete.setEnabled(!selected.isDeleted());
+					}
+					String selectedData = null;
+				}
+			}
+		);
+
 		JButton buttonClose = new JButton(MessageBundle.getMessage("angal.common.close.btn"));
 		buttonClose.setMnemonic(MessageBundle.getMnemonic("angal.common.close.btn.key"));
 		buttonClose.addActionListener(actionEvent -> dispose());
@@ -169,18 +168,36 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
+	@Override
+	public void groupInserted(AWTEvent e) {
+		pGroup.add(0, group);
+		((UserGroupBrowserModel) table.getModel()).fireTableDataChanged();
+		table.updateUI();
+		if (table.getRowCount() > 0) {
+			table.setRowSelectionInterval(0, 0);
+		}
+	}
+	@Override
+	public void groupUpdated(AWTEvent e) {
+		pGroup.set(selectedrow, group);
+		((UserGroupBrowserModel) table.getModel()).fireTableDataChanged();
+		table.updateUI();
+		if (table.getRowCount() > 0 && selectedrow > -1) {
+			table.setRowSelectionInterval(selectedrow, selectedrow);
+		}
+	}
 
 	class UserGroupBrowserModel extends DefaultTableModel {
 
 		private static final long serialVersionUID = 1L;
 
 		public UserGroupBrowserModel() {
-            try {
-                pGroup = userBrowsingManager.getUserGroup();
-            } catch (OHServiceException e) {
-                OHServiceExceptionUtil.showMessages(e);
-            }
-        }
+			try {
+				pGroup = userBrowsingManager.getUserGroup();
+			} catch (OHServiceException e) {
+				OHServiceExceptionUtil.showMessages(e);
+			}
+		}
 
 		@Override
 		public int getRowCount() {
@@ -189,7 +206,7 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 			}
 			return pGroup.size();
 		}
-		
+
 		@Override
 		public String getColumnName(int c) {
 			return pColumns[c];
@@ -208,10 +225,17 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 				return pGroup.get(r);
 			} else if (c == 1) {
 				return pGroup.get(r).getDesc();
-			} 
+			} else if (c == 2) {
+				return pGroup.get(r).isDeleted();
+			}
 			return null;
 		}
-		
+
+		@Override
+		public Class getColumnClass(int column) {
+			return (column == 2) ? Boolean.class : String.class;
+		}
+
 		@Override
 		public boolean isCellEditable(int arg0, int arg1) {
 			return false;

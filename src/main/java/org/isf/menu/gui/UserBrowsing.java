@@ -36,6 +36,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.isf.generaldata.GeneralData;
@@ -55,45 +57,22 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final String ALL_STR = MessageBundle.getMessage("angal.common.all.txt").toUpperCase();
-
-	@Override
-	public void userInserted(AWTEvent e) {
-		User u = (User) e.getSource();
-		userList.add(0, u);
-		((UserBrowserModel) table.getModel()).fireTableDataChanged();
-		table.updateUI();
-		if (table.getRowCount() > 0) {
-			table.setRowSelectionInterval(0, 0);
-		}
-	}
-
-	@Override
-	public void userUpdated(AWTEvent e) {
-		userList.set(selectedrow, user);
-		((UserBrowserModel) table.getModel()).fireTableDataChanged();
-		table.updateUI();
-		if ((table.getRowCount() > 0) && (selectedrow > -1)) {
-			table.setRowSelectionInterval(selectedrow, selectedrow);
-		}
-	}
-
+	private final JComboBox<UserGroup> userGroupFilter;
+	private final String[] pColumns = {
+		MessageBundle.getMessage("angal.userbrowser.user.col").toUpperCase(),
+		MessageBundle.getMessage("angal.common.group.txt").toUpperCase(),
+		MessageBundle.getMessage("angal.common.description.txt").toUpperCase(),
+		MessageBundle.getMessage("angal.userbrowser.locked.col").toUpperCase(),
+		MessageBundle.getMessage("angal.common.deleted.col").toUpperCase() };
+	private final int[] pColumnWidth = { 70, 70, 150, 20, 20 };
+	private final JTable table;
+	private final UserBrowsing myFrame;
+	private final UserBrowsingManager userBrowsingManager = Context.getApplicationContext().getBean(UserBrowsingManager.class);
 	private int selectedrow;
-	private JComboBox<UserGroup> userGroupFilter;
 	private List<User> userList;
-	private String[] pColumns = {
-			MessageBundle.getMessage("angal.userbrowser.user.col").toUpperCase(),
-			MessageBundle.getMessage("angal.common.group.txt").toUpperCase(),
-			MessageBundle.getMessage("angal.common.description.txt").toUpperCase(),
-			MessageBundle.getMessage("angal.userbrowser.locked.col").toUpperCase()};
-	private int[] pColumnWidth = {70, 70, 150, 20};
 	private User user;
 	private DefaultTableModel model;
-	private JTable table;
-
 	private String pSelection;
-
-	private UserBrowsing myFrame;
-	private UserBrowsingManager userBrowsingManager = Context.getApplicationContext().getBean(UserBrowsingManager.class);
 
 	public UserBrowsing() {
 
@@ -106,6 +85,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		table.getColumnModel().getColumn(1).setPreferredWidth(pColumnWidth[1]);
 		table.getColumnModel().getColumn(2).setPreferredWidth(pColumnWidth[2]);
 		table.getColumnModel().getColumn(3).setPreferredWidth(pColumnWidth[3]);
+		table.getColumnModel().getColumn(4).setPreferredWidth(pColumnWidth[4]);
 
 		JScrollPane scrollPane = new JScrollPane(table);
 		add(scrollPane, BorderLayout.CENTER);
@@ -149,6 +129,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		buttonPanel.add(buttonNew);
 
 		JButton buttonEdit = new JButton(MessageBundle.getMessage("angal.common.edit.btn"));
+		buttonEdit.setEnabled(false);
 		buttonEdit.setMnemonic(MessageBundle.getMnemonic("angal.common.edit.btn.key"));
 		buttonEdit.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -162,6 +143,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		buttonPanel.add(buttonEdit);
 
 		JButton buttonResetPassword = new JButton(MessageBundle.getMessage("angal.userbrowser.resetpassword.btn"));
+		buttonResetPassword.setEnabled(false);
 		buttonResetPassword.setMnemonic(MessageBundle.getMnemonic("angal.userbrowser.resetpassword.btn.key"));
 		buttonResetPassword.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -190,7 +172,8 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 				String newPassword = "";
 				JPanel stepPanel = new JPanel(new GridLayout(2, 1, 5, 5));
 				if (GeneralData.STRONGLENGTH != 0) {
-					stepPanel.add(new JLabel(MessageBundle.formatMessage("angal.userbrowser.step1.pleaseinsertanew.password.fmt.msg", GeneralData.STRONGLENGTH)));
+					stepPanel.add(
+						new JLabel(MessageBundle.formatMessage("angal.userbrowser.step1.pleaseinsertanew.password.fmt.msg", GeneralData.STRONGLENGTH)));
 				} else {
 					stepPanel.add(new JLabel(MessageBundle.formatMessage("angal.userbrowser.step1.pleaseinsertanew.password.msg")));
 				}
@@ -199,8 +182,8 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 
 				while (newPassword.isEmpty()) {
 					int action = JOptionPane
-							.showConfirmDialog(this, stepPanel, MessageBundle.getMessage("angal.userbrowser.resetpassword.title"),
-									JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+						.showConfirmDialog(this, stepPanel, MessageBundle.getMessage("angal.userbrowser.resetpassword.title"),
+							JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 					if (JOptionPane.CANCEL_OPTION == action) {
 						return;
 					}
@@ -230,8 +213,8 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 				stepPanel.add(new JLabel(MessageBundle.getMessage("angal.userbrowser.step2.pleaserepeatthenewpassword.label")));
 				stepPanel.add(pwd);
 				int action = JOptionPane
-						.showConfirmDialog(this, stepPanel, MessageBundle.getMessage("angal.userbrowser.resetpassword.title"),
-								JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+					.showConfirmDialog(this, stepPanel, MessageBundle.getMessage("angal.userbrowser.resetpassword.title"),
+						JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 				if (JOptionPane.CANCEL_OPTION == action) {
 					return;
 				}
@@ -269,6 +252,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		buttonPanel.add(buttonResetPassword);
 
 		JButton buttonDelete = new JButton(MessageBundle.getMessage("angal.common.delete.btn"));
+		buttonDelete.setEnabled(false);
 		buttonDelete.setMnemonic(MessageBundle.getMnemonic("angal.common.delete.btn.key"));
 		buttonDelete.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -278,10 +262,18 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 				int answer = MessageDialog.yesNo(null, "angal.userbrowser.deleteuser.fmt.msg", selectedUser.getUserName());
 				try {
 					if (answer == JOptionPane.YES_OPTION) {
-						userBrowsingManager.deleteUser(selectedUser);
-						userList.remove(table.getSelectedRow());
-						model.fireTableDataChanged();
-						table.updateUI();
+						try {
+							userBrowsingManager.deleteUser(selectedUser);
+							userList.remove(table.getSelectedRow());
+							model.fireTableDataChanged();
+							table.updateUI();
+						} catch (OHServiceException ex) {
+							selectedUser.setDeleted(true);
+							userBrowsingManager.deleteUser(selectedUser);
+							userList.set(table.getSelectedRow(), selectedUser);
+							model.fireTableDataChanged();
+							table.updateUI();
+						}
 					}
 				} catch (OHServiceException e) {
 					OHServiceExceptionUtil.showMessages(e);
@@ -289,6 +281,21 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 			}
 		});
 		buttonPanel.add(buttonDelete);
+
+		table.getSelectionModel().addListSelectionListener(
+			new ListSelectionListener() {
+
+				public void valueChanged(ListSelectionEvent e) {
+					if (table.getSelectedRow() >= 0) {
+						User selected = (User) table.getValueAt(table.getSelectedRow(), -1);
+						buttonEdit.setEnabled(!selected.isDeleted());
+						buttonDelete.setEnabled(!selected.isDeleted());
+						buttonResetPassword.setEnabled(!selected.isDeleted());
+					}
+					String selectedData = null;
+				}
+			}
+		);
 
 		JButton buttonClose = new JButton(MessageBundle.getMessage("angal.common.close.btn"));
 		buttonClose.setMnemonic(MessageBundle.getMnemonic("angal.common.close.btn.key"));
@@ -300,6 +307,25 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
+	}
+	@Override
+	public void userInserted(AWTEvent e) {
+		User u = (User) e.getSource();
+		userList.add(0, u);
+		((UserBrowserModel) table.getModel()).fireTableDataChanged();
+		table.updateUI();
+		if (table.getRowCount() > 0) {
+			table.setRowSelectionInterval(0, 0);
+		}
+	}
+	@Override
+	public void userUpdated(AWTEvent e) {
+		userList.set(selectedrow, user);
+		((UserBrowserModel) table.getModel()).fireTableDataChanged();
+		table.updateUI();
+		if ((table.getRowCount() > 0) && (selectedrow > -1)) {
+			table.setRowSelectionInterval(selectedrow, selectedrow);
+		}
 	}
 
 	class UserBrowserModel extends DefaultTableModel {
@@ -324,7 +350,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 
 		@Override
 		public Class getColumnClass(int column) {
-			return (column == 3) ? Boolean.class : String.class;
+			return (column == 3 || column == 4) ? Boolean.class : String.class;
 		}
 
 		@Override
@@ -357,6 +383,8 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 				return userList.get(r).getDesc();
 			} else if (c == 3) {
 				return userList.get(r).isAccountLocked();
+			} else if (c == 4) {
+				return userList.get(r).isDeleted();
 			}
 			return null;
 		}

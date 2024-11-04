@@ -48,6 +48,7 @@ import org.isf.menu.manager.UserBrowsingManager;
 import org.isf.menu.model.User;
 import org.isf.menu.model.UserGroup;
 import org.isf.utils.db.BCrypt;
+import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.gui.OHServiceExceptionUtil;
 import org.isf.utils.jobjects.MessageDialog;
@@ -262,17 +263,22 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 				int answer = MessageDialog.yesNo(null, "angal.userbrowser.deleteuser.fmt.msg", selectedUser.getUserName());
 				try {
 					if (answer == JOptionPane.YES_OPTION) {
+						userBrowsingManager.deleteUser(selectedUser);
+						userList.remove(table.getSelectedRow());
+						model.fireTableDataChanged();
+						table.updateUI();
+					}
+				} catch (OHDataIntegrityViolationException ex) {
+					answer = MessageDialog.yesNo(null, "angal.userbrowser.softdeleteuser.fmt.msg", selectedUser.getUserName());
+					if (answer == JOptionPane.YES_OPTION) {
 						try {
+							user.setDeleted(true);
 							userBrowsingManager.deleteUser(selectedUser);
 							userList.remove(table.getSelectedRow());
 							model.fireTableDataChanged();
 							table.updateUI();
-						} catch (OHServiceException ex) {
-							selectedUser.setDeleted(true);
-							userBrowsingManager.deleteUser(selectedUser);
-							userList.set(table.getSelectedRow(), selectedUser);
-							model.fireTableDataChanged();
-							table.updateUI();
+						} catch (OHServiceException e) {
+							OHServiceExceptionUtil.showMessages(e);
 						}
 					}
 				} catch (OHServiceException e) {

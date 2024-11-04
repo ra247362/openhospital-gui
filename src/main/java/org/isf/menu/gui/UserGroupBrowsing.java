@@ -41,6 +41,7 @@ import org.isf.menu.gui.GroupEdit.GroupListener;
 import org.isf.menu.manager.Context;
 import org.isf.menu.manager.UserBrowsingManager;
 import org.isf.menu.model.UserGroup;
+import org.isf.utils.exception.OHDataIntegrityViolationException;
 import org.isf.utils.exception.OHServiceException;
 import org.isf.utils.exception.gui.OHServiceExceptionUtil;
 import org.isf.utils.jobjects.MessageDialog;
@@ -136,6 +137,19 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 						pGroup.remove(table.getSelectedRow());
 						model.fireTableDataChanged();
 						table.updateUI();
+					}
+				} catch (OHDataIntegrityViolationException ex) {
+					answer = MessageDialog.yesNo(null, "angal.groupsbrowser.softdeleteuser.fmt.msg", userGroup.getCode());
+					if (answer == JOptionPane.YES_OPTION) {
+						try {
+							userGroup.setDeleted(true);
+							userBrowsingManager.deleteGroup(userGroup);
+							pGroup.remove(table.getSelectedRow());
+							model.fireTableDataChanged();
+							table.updateUI();
+						} catch (OHServiceException e) {
+							OHServiceExceptionUtil.showMessages(e);
+						}
 					}
 				} catch (OHServiceException e) {
 					OHServiceExceptionUtil.showMessages(e);

@@ -242,7 +242,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 				newPassword2 = null;
 				user.setPasswd(hashed);
 				try {
-					if (userBrowsingManager.updatePassword(user)) {
+					if (userBrowsingManager.updatePassword(user) != null) {
 						MessageDialog.info(this, "angal.userbrowser.thepasswordhasbeenchanged.msg");
 					}
 				} catch (OHServiceException e) {
@@ -264,7 +264,6 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 				try {
 					if (answer == JOptionPane.YES_OPTION) {
 						userBrowsingManager.deleteUser(selectedUser);
-						userList.remove(table.getSelectedRow());
 						model.fireTableDataChanged();
 						table.updateUI();
 					}
@@ -272,9 +271,8 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 					answer = MessageDialog.yesNo(null, "angal.userbrowser.softdeleteuser.fmt.msg", selectedUser.getUserName());
 					if (answer == JOptionPane.YES_OPTION) {
 						try {
-							user.setDeleted(true);
-							userBrowsingManager.deleteUser(selectedUser);
-							userList.remove(table.getSelectedRow());
+							selectedUser.setDeleted(true);
+							userBrowsingManager.updateUser(selectedUser);
 							model.fireTableDataChanged();
 							table.updateUI();
 						} catch (OHServiceException e) {

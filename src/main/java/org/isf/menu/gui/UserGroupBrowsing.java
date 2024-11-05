@@ -134,17 +134,15 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 				try {
 					if (answer == JOptionPane.YES_OPTION) {
 						userBrowsingManager.deleteGroup(userGroup);
-						pGroup.remove(table.getSelectedRow());
 						model.fireTableDataChanged();
 						table.updateUI();
 					}
 				} catch (OHDataIntegrityViolationException ex) {
-					answer = MessageDialog.yesNo(null, "angal.groupsbrowser.softdeleteuser.fmt.msg", userGroup.getCode());
+					answer = MessageDialog.yesNo(null, "angal.groupsbrowser.softdeletegroup.fmt.msg", userGroup.getCode());
 					if (answer == JOptionPane.YES_OPTION) {
 						try {
 							userGroup.setDeleted(true);
-							userBrowsingManager.deleteGroup(userGroup);
-							pGroup.remove(table.getSelectedRow());
+							userBrowsingManager.updateUserGroup(userGroup);
 							model.fireTableDataChanged();
 							table.updateUI();
 						} catch (OHServiceException e) {

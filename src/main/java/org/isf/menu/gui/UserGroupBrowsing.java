@@ -138,7 +138,7 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 						table.updateUI();
 					}
 				} catch (OHDataIntegrityViolationException ex) {
-					answer = MessageDialog.yesNo(null, "angal.groupsbrowser.softdeleteuser.fmt.msg", userGroup.getCode());
+					answer = MessageDialog.yesNo(null, "angal.groupsbrowser.softdeletegroup.fmt.msg", userGroup.getCode());
 					if (answer == JOptionPane.YES_OPTION) {
 						try {
 							userGroup.setDeleted(true);

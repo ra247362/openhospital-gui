@@ -32,8 +32,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.isf.generaldata.MessageBundle;
@@ -96,7 +94,6 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 		buttonPanel.add(buttonNew);
 
 		JButton buttonEdit = new JButton(MessageBundle.getMessage("angal.common.edit.btn"));
-		buttonEdit.setEnabled(false);
 		buttonEdit.setMnemonic(MessageBundle.getMnemonic("angal.common.edit.btn.key"));
 		buttonEdit.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -110,7 +107,6 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 		buttonPanel.add(buttonEdit);
 
 		JButton buttonPrivilege = new JButton(MessageBundle.getMessage("angal.groupsbrowser.groupmenu.btn"));
-		buttonPrivilege.setEnabled(false);
 		buttonPrivilege.setMnemonic(MessageBundle.getMnemonic("angal.groupsbrowser.groupmenu.btn.key"));
 		buttonPrivilege.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -123,7 +119,6 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 		buttonPanel.add(buttonPrivilege);
 
 		JButton buttonDelete = new JButton(MessageBundle.getMessage("angal.common.delete.btn"));
-		buttonDelete.setEnabled(false);
 		buttonDelete.setMnemonic(MessageBundle.getMnemonic("angal.common.delete.btn.key"));
 		buttonDelete.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -157,21 +152,6 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 		});
 		buttonPanel.add(buttonDelete);
 
-		table.getSelectionModel().addListSelectionListener(
-			new ListSelectionListener() {
-
-				public void valueChanged(ListSelectionEvent e) {
-					if (table.getSelectedRow() >= 0) {
-						UserGroup selected = (UserGroup) table.getValueAt(table.getSelectedRow(), -1);
-						buttonEdit.setEnabled(!selected.isDeleted());
-						buttonPrivilege.setEnabled(!selected.isDeleted());
-						buttonDelete.setEnabled(!selected.isDeleted());
-					}
-					String selectedData = null;
-				}
-			}
-		);
-
 		JButton buttonClose = new JButton(MessageBundle.getMessage("angal.common.close.btn"));
 		buttonClose.setMnemonic(MessageBundle.getMnemonic("angal.common.close.btn.key"));
 		buttonClose.addActionListener(actionEvent -> dispose());
@@ -181,6 +161,7 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
+
 	@Override
 	public void groupInserted(AWTEvent e) {
 		pGroup.add(0, group);
@@ -190,6 +171,7 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 			table.setRowSelectionInterval(0, 0);
 		}
 	}
+
 	@Override
 	public void groupUpdated(AWTEvent e) {
 		pGroup.set(selectedrow, group);

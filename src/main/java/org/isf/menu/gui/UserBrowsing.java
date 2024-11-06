@@ -130,7 +130,6 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		buttonPanel.add(buttonNew);
 
 		JButton buttonEdit = new JButton(MessageBundle.getMessage("angal.common.edit.btn"));
-		buttonEdit.setEnabled(false);
 		buttonEdit.setMnemonic(MessageBundle.getMnemonic("angal.common.edit.btn.key"));
 		buttonEdit.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -144,7 +143,6 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		buttonPanel.add(buttonEdit);
 
 		JButton buttonResetPassword = new JButton(MessageBundle.getMessage("angal.userbrowser.resetpassword.btn"));
-		buttonResetPassword.setEnabled(false);
 		buttonResetPassword.setMnemonic(MessageBundle.getMnemonic("angal.userbrowser.resetpassword.btn.key"));
 		buttonResetPassword.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -253,7 +251,6 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		buttonPanel.add(buttonResetPassword);
 
 		JButton buttonDelete = new JButton(MessageBundle.getMessage("angal.common.delete.btn"));
-		buttonDelete.setEnabled(false);
 		buttonDelete.setMnemonic(MessageBundle.getMnemonic("angal.common.delete.btn.key"));
 		buttonDelete.addActionListener(actionEvent -> {
 			if (table.getSelectedRow() < 0) {
@@ -287,21 +284,6 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		});
 		buttonPanel.add(buttonDelete);
 
-		table.getSelectionModel().addListSelectionListener(
-			new ListSelectionListener() {
-
-				public void valueChanged(ListSelectionEvent e) {
-					if (table.getSelectedRow() >= 0) {
-						User selected = (User) table.getValueAt(table.getSelectedRow(), -1);
-						buttonEdit.setEnabled(!selected.isDeleted());
-						buttonDelete.setEnabled(!selected.isDeleted());
-						buttonResetPassword.setEnabled(!selected.isDeleted());
-					}
-					String selectedData = null;
-				}
-			}
-		);
-
 		JButton buttonClose = new JButton(MessageBundle.getMessage("angal.common.close.btn"));
 		buttonClose.setMnemonic(MessageBundle.getMnemonic("angal.common.close.btn.key"));
 		buttonClose.addActionListener(actionEvent -> dispose());
@@ -313,6 +295,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
+
 	@Override
 	public void userInserted(AWTEvent e) {
 		User u = (User) e.getSource();
@@ -323,6 +306,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 			table.setRowSelectionInterval(0, 0);
 		}
 	}
+
 	@Override
 	public void userUpdated(AWTEvent e) {
 		userList.set(selectedrow, user);

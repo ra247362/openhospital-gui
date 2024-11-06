@@ -264,6 +264,7 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 				try {
 					if (answer == JOptionPane.YES_OPTION) {
 						userBrowsingManager.deleteUser(selectedUser);
+						userList.remove(table.getSelectedRow());
 						model.fireTableDataChanged();
 						table.updateUI();
 					}

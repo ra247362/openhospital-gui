@@ -134,6 +134,7 @@ public class UserGroupBrowsing extends ModalJFrame implements GroupListener {
 				try {
 					if (answer == JOptionPane.YES_OPTION) {
 						userBrowsingManager.deleteGroup(userGroup);
+						pGroup.remove(table.getSelectedRow());
 						model.fireTableDataChanged();
 						table.updateUI();
 					}

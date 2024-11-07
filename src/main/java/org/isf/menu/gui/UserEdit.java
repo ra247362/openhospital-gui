@@ -191,7 +191,7 @@ public class UserEdit extends JDialog {
 				}
 			}
 			SpringUtilities.makeCompactGrid(dataPanel,
-					insert ? 5 : 4, 2,
+					(insert || user.isDeleted()) ? 5 : 4, 2,
 					5, 5,
 					5, 5);
 		}

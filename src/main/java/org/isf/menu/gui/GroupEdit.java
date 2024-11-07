@@ -165,7 +165,7 @@ public class GroupEdit extends JDialog {
 				dataPanel.add(isDeletedCheck);
 			}
 
-			SpringUtilities.makeCompactGrid(dataPanel, 3, 2, 5, 5, 5, 5);
+			SpringUtilities.makeCompactGrid(dataPanel, group.isDeleted() ? 3 : 2, 2, 5, 5, 5, 5);
 		}
 		return dataPanel;
 	}

@@ -25,6 +25,7 @@ import java.awt.AWTEvent;
 import java.util.EventListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -93,6 +94,7 @@ public class GroupEdit extends JDialog {
 	private JButton okButton;
 	private JTextField descriptionTextField;
 	private JTextField nameTextField;
+	private JCheckBox isDeletedCheck;
     
 	private UserGroup group;
 	private boolean insert;
@@ -155,7 +157,15 @@ public class GroupEdit extends JDialog {
 			  
 			dataPanel.add(descLabel);
 			dataPanel.add(getDescriptionTextField());
-			SpringUtilities.makeCompactGrid(dataPanel, 2, 2, 5, 5, 5, 5);
+
+			if (!insert && group.isDeleted()) {
+				dataPanel.add(new JLabel(MessageBundle.getMessage("angal.common.deleted.label")));
+				isDeletedCheck = new JCheckBox();
+				isDeletedCheck.setSelected(true);
+				dataPanel.add(isDeletedCheck);
+			}
+
+			SpringUtilities.makeCompactGrid(dataPanel, 3, 2, 5, 5, 5, 5);
 		}
 		return dataPanel;
 	}
@@ -217,6 +227,7 @@ public class GroupEdit extends JDialog {
 					}
 				} else {         // updating
 					try {
+						group.setDeleted(isDeletedCheck.isSelected());
 						userBrowsingManager.updateUserGroup(group);
 						fireGroupUpdated();
 						dispose();

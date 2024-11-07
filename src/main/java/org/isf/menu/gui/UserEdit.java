@@ -106,6 +106,8 @@ public class UserEdit extends JDialog {
 	private JComboBox<UserGroup> userGroupComboBox;
 	private JCheckBox accountLocked;
 
+	private JCheckBox isDeletedCheck;
+
 	private User user;
 	private boolean insert;
 
@@ -180,6 +182,13 @@ public class UserEdit extends JDialog {
 				accountLocked = new JCheckBox();
 				accountLocked.setSelected(user.isAccountLocked());
 				dataPanel.add(accountLocked);
+
+				if(user.isDeleted()) {
+					dataPanel.add(new JLabel(MessageBundle.getMessage("angal.common.deleted.label")));
+					isDeletedCheck = new JCheckBox();
+					isDeletedCheck.setSelected(true);
+					dataPanel.add(isDeletedCheck);
+				}
 			}
 			SpringUtilities.makeCompactGrid(dataPanel,
 					insert ? 5 : 4, 2,
@@ -292,6 +301,7 @@ public class UserEdit extends JDialog {
 					Arrays.fill(password, '0');
 					Arrays.fill(repeatPassword, '0');
 				} else {
+					user.setDeleted(isDeletedCheck.isSelected());
 					user.setUserGroupName((UserGroup) userGroupComboBox.getSelectedItem());
 					try {
 						if (user.isAccountLocked() && !accountLocked.isSelected()) {

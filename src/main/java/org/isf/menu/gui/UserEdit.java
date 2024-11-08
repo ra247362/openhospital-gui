@@ -209,8 +209,11 @@ public class UserEdit extends JDialog {
 					MessageDialog.error(null, "angal.userbrowser.pleaseprovideavalidusername.msg");
 					return;
 				}
+
 				user.setUserName(userName);
 				user.setDesc(descriptionTextField.getText());
+				user.setDeleted(isDeletedCheck.isSelected());
+
 				if (insert) {
 					char[] password = pwdTextField.getPassword();
 					char[] repeatPassword = pwd2TextField.getPassword();
@@ -255,9 +258,11 @@ public class UserEdit extends JDialog {
 						Arrays.fill(repeatPassword, '0');
 						return;
 					}
+
 					String hashed = BCrypt.hashpw(new String(password), BCrypt.gensalt());
 					user.setPasswd(hashed);
 					user.setUserGroupName((UserGroup) userGroupComboBox.getSelectedItem());
+
 					try {
 						userBrowsingManager.newUser(user);
 						fireUserInserted(user);
@@ -269,7 +274,6 @@ public class UserEdit extends JDialog {
 					Arrays.fill(password, '0');
 					Arrays.fill(repeatPassword, '0');
 				} else {
-					user.setDeleted(isDeletedCheck.isSelected());
 					user.setUserGroupName((UserGroup) userGroupComboBox.getSelectedItem());
 					try {
 						if (user.isAccountLocked() && !accountLocked.isSelected()) {

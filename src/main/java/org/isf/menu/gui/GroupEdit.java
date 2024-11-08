@@ -188,8 +188,9 @@ public class GroupEdit extends JDialog {
 				}
 
 				group.setCode(nameTextField.getText());
-
 				group.setDesc(descriptionTextField.getText());
+				group.setDeleted(isDeletedCheck.isSelected());
+
 				if (insert) {      // inserting
 					try {
 						userBrowsingManager.newUserGroup(group);
@@ -201,7 +202,6 @@ public class GroupEdit extends JDialog {
 					}
 				} else {         // updating
 					try {
-						group.setDeleted(isDeletedCheck.isSelected());
 						userBrowsingManager.updateUserGroup(group);
 						fireGroupUpdated();
 						dispose();

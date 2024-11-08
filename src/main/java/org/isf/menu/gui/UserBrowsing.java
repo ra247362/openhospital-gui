@@ -36,8 +36,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.isf.generaldata.GeneralData;
@@ -266,16 +264,21 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 						table.updateUI();
 					}
 				} catch (OHDataIntegrityViolationException ex) {
-					answer = MessageDialog.yesNo(null, "angal.userbrowser.softdeleteuser.fmt.msg", selectedUser.getUserName());
-					if (answer == JOptionPane.YES_OPTION) {
-						try {
-							selectedUser.setDeleted(true);
-							userBrowsingManager.updateUser(selectedUser);
-							model.fireTableDataChanged();
-							table.updateUI();
-						} catch (OHServiceException e) {
-							OHServiceExceptionUtil.showMessages(e);
+					try {
+						User oldUser = userBrowsingManager.getUserByName(selectedUser.getUserName(), true);
+						if (oldUser.isDeleted()) {
+							MessageDialog.error(null, "angal.userbrowser.alreadysoftdeleted.msg");
+						} else {
+							answer = MessageDialog.yesNo(null, "angal.userbrowser.softdeleteuser.fmt.msg", selectedUser.getUserName());
+							if (answer == JOptionPane.YES_OPTION) {
+								selectedUser.setDeleted(true);
+								userBrowsingManager.updateUser(selectedUser);
+								model.fireTableDataChanged();
+								table.updateUI();
+							}
 						}
+					} catch (OHServiceException e) {
+						OHServiceExceptionUtil.showMessages(e);
 					}
 				} catch (OHServiceException e) {
 					OHServiceExceptionUtil.showMessages(e);

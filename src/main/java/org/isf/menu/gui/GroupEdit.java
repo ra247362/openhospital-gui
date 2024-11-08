@@ -46,23 +46,37 @@ import org.isf.utils.layout.SpringUtilities;
 public class GroupEdit extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	private EventListenerList groupListeners = new EventListenerList();
+	private final EventListenerList groupListeners = new EventListenerList();
 
-	private UserBrowsingManager userBrowsingManager = Context.getApplicationContext().getBean(UserBrowsingManager.class);
-
-    public interface GroupListener extends EventListener {
-        void groupUpdated(AWTEvent e);
-        void groupInserted(AWTEvent e);
-    }
-
-    public void addGroupListener(GroupListener l) {
-    	groupListeners.add(GroupListener.class, l);
-    }
-
-    public void removeGroupListener(GroupListener listener) {
-    	groupListeners.remove(GroupListener.class, listener);
-    }
-
+	private final UserBrowsingManager userBrowsingManager = Context.getApplicationContext().getBean(UserBrowsingManager.class);
+	private final UserGroup group;
+	private final boolean insert;
+	private JPanel jContentPane;
+	private JPanel dataPanel;
+	private JPanel buttonPanel;
+	private JButton cancelButton;
+	private JButton okButton;
+	private JTextField descriptionTextField;
+	private JTextField nameTextField;
+	private JCheckBox isDeletedCheck;
+	/**
+	 * This is the default constructor; we pass the arraylist and the selectedrow because we need to update them
+	 */
+	public GroupEdit(UserGroupBrowsing parent, UserGroup old, boolean inserting) {
+		super(parent, inserting
+			? MessageBundle.getMessage("angal.groupsbrowser.newgroup.title")
+			: MessageBundle.getMessage("angal.groupsbrowser.editgroup.title"), true);
+		addGroupListener(parent);
+		insert = inserting;
+		group = old;
+		initialize();
+	}
+	public void addGroupListener(GroupListener l) {
+		groupListeners.add(GroupListener.class, l);
+	}
+	public void removeGroupListener(GroupListener listener) {
+		groupListeners.remove(GroupListener.class, listener);
+	}
 	private void fireGroupInserted(UserGroup aGroup) {
 		AWTEvent event = new AWTEvent(aGroup, AWTEvent.RESERVED_ID_MAX + 1) {
 
@@ -74,7 +88,6 @@ public class GroupEdit extends JDialog {
 			((GroupListener) listener).groupInserted(event);
 		}
 	}
-
 	private void fireGroupUpdated() {
 		AWTEvent event = new AWTEvent(new Object(), AWTEvent.RESERVED_ID_MAX + 1) {
 
@@ -86,33 +99,6 @@ public class GroupEdit extends JDialog {
 			((GroupListener) listener).groupUpdated(event);
 		}
 	}
-    
-	private JPanel jContentPane;
-	private JPanel dataPanel;
-	private JPanel buttonPanel;
-	private JButton cancelButton;
-	private JButton okButton;
-	private JTextField descriptionTextField;
-	private JTextField nameTextField;
-	private JCheckBox isDeletedCheck;
-    
-	private UserGroup group;
-	private boolean insert;
-    
-	/**
-	 * This is the default constructor; we pass the arraylist and the selectedrow
-     * because we need to update them
-	 */
-	public GroupEdit(UserGroupBrowsing parent, UserGroup old, boolean inserting) {
-		super(parent, inserting
-				? MessageBundle.getMessage("angal.groupsbrowser.newgroup.title")
-				: MessageBundle.getMessage("angal.groupsbrowser.editgroup.title"), true);
-		addGroupListener(parent);
-		insert = inserting;
-		group = old;
-		initialize();
-	}
-
 	/**
 	 * This method initializes this
 	 */
@@ -126,10 +112,8 @@ public class GroupEdit extends JDialog {
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
-
 	/**
 	 * This method initializes jContentPane
-	 * 
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJContentPane() {
@@ -141,10 +125,8 @@ public class GroupEdit extends JDialog {
 		}
 		return jContentPane;
 	}
-
 	/**
 	 * This method initializes dataPanel
-	 *
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getDataPanel() {
@@ -154,40 +136,34 @@ public class GroupEdit extends JDialog {
 			dataPanel = new JPanel(new SpringLayout());
 			dataPanel.add(nameLabel);
 			dataPanel.add(getNameTextField());
-			  
+
 			dataPanel.add(descLabel);
 			dataPanel.add(getDescriptionTextField());
 
-			if (!insert && group.isDeleted()) {
-				dataPanel.add(new JLabel(MessageBundle.getMessage("angal.common.deleted.label")));
-				isDeletedCheck = new JCheckBox();
-				isDeletedCheck.setSelected(true);
-				dataPanel.add(isDeletedCheck);
-			}
+			dataPanel.add(new JLabel(MessageBundle.getMessage("angal.common.deleted.label")));
+			isDeletedCheck = new JCheckBox();
+			isDeletedCheck.setSelected(group.isDeleted());
+			dataPanel.add(isDeletedCheck);
 
-			SpringUtilities.makeCompactGrid(dataPanel, group.isDeleted() ? 3 : 2, 2, 5, 5, 5, 5);
+			SpringUtilities.makeCompactGrid(dataPanel, 3, 2, 5, 5, 5, 5);
 		}
 		return dataPanel;
 	}
-
 	/**
-	 * This method initializes buttonPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
+	 * This method initializes buttonPanel
+	 * @return javax.swing.JPanel
 	 */
 	private JPanel getButtonPanel() {
 		if (buttonPanel == null) {
 			buttonPanel = new JPanel();
-			buttonPanel.add(getOkButton(), null);  
-			buttonPanel.add(getCancelButton(), null); 
+			buttonPanel.add(getOkButton(), null);
+			buttonPanel.add(getCancelButton(), null);
 		}
 		return buttonPanel;
 	}
-
 	/**
-	 * This method initializes cancelButton	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes cancelButton
+	 * @return javax.swing.JButton
 	 */
 	private JButton getCancelButton() {
 		if (cancelButton == null) {
@@ -197,11 +173,9 @@ public class GroupEdit extends JDialog {
 		}
 		return cancelButton;
 	}
-
 	/**
-	 * This method initializes okButton	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes okButton
+	 * @return javax.swing.JButton
 	 */
 	private JButton getOkButton() {
 		if (okButton == null) {
@@ -240,11 +214,9 @@ public class GroupEdit extends JDialog {
 		}
 		return okButton;
 	}
-
 	/**
-	 * This method initializes descriptionTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
+	 * This method initializes descriptionTextField
+	 * @return javax.swing.JTextField
 	 */
 	private JTextField getDescriptionTextField() {
 		if (descriptionTextField == null) {
@@ -256,7 +228,6 @@ public class GroupEdit extends JDialog {
 		}
 		return descriptionTextField;
 	}
-
 	private JTextField getNameTextField() {
 		if (nameTextField == null) {
 			if (insert) {
@@ -267,6 +238,12 @@ public class GroupEdit extends JDialog {
 			}
 		}
 		return nameTextField;
+	}
+
+	public interface GroupListener extends EventListener {
+
+		void groupUpdated(AWTEvent e);
+		void groupInserted(AWTEvent e);
 	}
 
 }

@@ -271,15 +271,14 @@ public class UserBrowsing extends ModalJFrame implements UserListener {
 						} else {
 							answer = MessageDialog.yesNo(null, "angal.userbrowser.softdeleteuser.fmt.msg", selectedUser.getUserName());
 							if (answer == JOptionPane.YES_OPTION) {
-								User update = new User(selectedUser.getUserName(), selectedUser.getUserGroupName(), selectedUser.getPasswd(),
-									selectedUser.getDesc());
-								update.setDeleted(true);
-								userBrowsingManager.updateUser(update);
+								selectedUser.setDeleted(true);
+								userBrowsingManager.updateUser(selectedUser);
 								model.fireTableDataChanged();
 								table.updateUI();
 							}
 						}
 					} catch (OHServiceException e) {
+						selectedUser.setDeleted(false);
 						OHServiceExceptionUtil.showMessages(e);
 					}
 				} catch (OHServiceException e) {

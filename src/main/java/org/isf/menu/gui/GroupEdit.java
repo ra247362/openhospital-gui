@@ -59,6 +59,7 @@ public class GroupEdit extends JDialog {
 	private JTextField descriptionTextField;
 	private JTextField nameTextField;
 	private JCheckBox isDeletedCheck;
+
 	/**
 	 * This is the default constructor; we pass the arraylist and the selectedrow because we need to update them
 	 */
@@ -103,17 +104,16 @@ public class GroupEdit extends JDialog {
 	 * This method initializes this
 	 */
 	private void initialize() {
-
-		this.setBounds(300, 300, 450, 150);
 		this.setContentPane(getJContentPane());
-
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setResizable(false);
+		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 	/**
 	 * This method initializes jContentPane
+	 * 
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getJContentPane() {
@@ -127,6 +127,7 @@ public class GroupEdit extends JDialog {
 	}
 	/**
 	 * This method initializes dataPanel
+	 * 
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getDataPanel() {
@@ -151,6 +152,7 @@ public class GroupEdit extends JDialog {
 	}
 	/**
 	 * This method initializes buttonPanel
+	 * 
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getButtonPanel() {
@@ -163,6 +165,7 @@ public class GroupEdit extends JDialog {
 	}
 	/**
 	 * This method initializes cancelButton
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getCancelButton() {
@@ -175,6 +178,7 @@ public class GroupEdit extends JDialog {
 	}
 	/**
 	 * This method initializes okButton
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getOkButton() {
@@ -191,7 +195,7 @@ public class GroupEdit extends JDialog {
 				group.setDesc(descriptionTextField.getText());
 				group.setDeleted(isDeletedCheck.isSelected());
 
-				if (insert) {      // inserting
+				if (insert) { // inserting
 					try {
 						userBrowsingManager.newUserGroup(group);
 						fireGroupInserted(group);
@@ -200,7 +204,7 @@ public class GroupEdit extends JDialog {
 						MessageDialog.error(null, "angal.common.datacouldnotbesaved.msg");
 						OHServiceExceptionUtil.showMessages(e1);
 					}
-				} else {         // updating
+				} else { // updating
 					try {
 						userBrowsingManager.updateUserGroup(group);
 						fireGroupUpdated();
@@ -216,12 +220,13 @@ public class GroupEdit extends JDialog {
 	}
 	/**
 	 * This method initializes descriptionTextField
+	 * 
 	 * @return javax.swing.JTextField
 	 */
 	private JTextField getDescriptionTextField() {
 		if (descriptionTextField == null) {
 			if (insert) {
-				descriptionTextField = new JTextField();
+				descriptionTextField = new JTextField(15);
 			} else {
 				descriptionTextField = new JTextField(group.getDesc());
 			}
@@ -231,7 +236,7 @@ public class GroupEdit extends JDialog {
 	private JTextField getNameTextField() {
 		if (nameTextField == null) {
 			if (insert) {
-				nameTextField = new JTextField();
+				nameTextField = new JTextField(15);
 			} else {
 				nameTextField = new JTextField(group.getCode());
 				nameTextField.setEditable(false);

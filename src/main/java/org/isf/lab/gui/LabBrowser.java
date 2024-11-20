@@ -38,6 +38,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
@@ -95,6 +96,7 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 	private JPanel jSelectionPanel;
 	private JTable jTable;
 	private JComboBox comboExams;
+	private JTextField patientCodeField;
 	private int pfrmHeight = 100;
 	private List<Laboratory> pLabs;
 	private String[] pColumns = {
@@ -359,6 +361,7 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 			jSelectionPanel = new JPanel();
 			jSelectionPanel.setPreferredSize(new Dimension(225, pfrmHeight));
 			jSelectionPanel.add(new JLabel(MessageBundle.getMessage("angal.lab.selectanexam")));
+			jSelectionPanel.add(getPatientCodeField());
 			jSelectionPanel.add(getComboExams());
 			jSelectionPanel.add(getDateFilterPanel());
 			jSelectionPanel.add(getFilterButton());
@@ -391,6 +394,22 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 		}
 		return jTable;
 	}
+	
+	/**
+     * This method initializes the patient code search text field.
+     *
+     * @return patientCodeField (JTextField)
+     */
+    private JTextField getPatientCodeField() {
+        if (patientCodeField == null) {
+            patientCodeField = new JTextField();
+            patientCodeField.setPreferredSize(new Dimension(215, 30));
+
+
+        }
+        return patientCodeField;
+    }
+
 
 	/**
 	 * This method initializes comboExams, that allows to choose which Exam the
@@ -455,7 +474,7 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 				if (typeSelected.equalsIgnoreCase(MessageBundle.getMessage("angal.common.all.txt"))) {
 					typeSelected = null;
 				}
-				model = new LabBrowsingModel(typeSelected, dateFrom.getDate(), dateTo.getDate());
+				model = new LabBrowsingModel(typeSelected, dateFrom.getDate(), dateTo.getDate(), patientCodeField.getText());
 				model.fireTableDataChanged();
 				jTable.updateUI();
 			});

@@ -52,6 +52,7 @@ import org.isf.lab.gui.LabEdit.LabEditListener;
 import org.isf.lab.gui.LabEditExtended.LabEditExtendedListener;
 import org.isf.lab.gui.LabNew.LabListener;
 import org.isf.lab.manager.LabManager;
+import org.isf.patient.manager.PatientBrowserManager;
 import org.isf.lab.model.Laboratory;
 import org.isf.lab.model.LaboratoryForPrint;
 import org.isf.menu.gui.MainMenu;
@@ -110,6 +111,7 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 	private int[] maxWidth = {150, 200, 200, 200};
 	private boolean[] columnsVisible = { true, GeneralData.LABEXTENDED, true, true};
 	private LabManager labManager = Context.getApplicationContext().getBean(LabManager.class);
+	private PatientBrowserManager patManager = Context.getApplicationContext().getBean(PatientBrowserManager.class);
 	private PrintManager printManager = Context.getApplicationContext().getBean(PrintManager.class);
 	private ExamBrowsingManager examBrowsingManager = Context.getApplicationContext().getBean(ExamBrowsingManager.class);
 	private LabBrowsingModel model;
@@ -394,21 +396,21 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 		}
 		return jTable;
 	}
-	
+
 	/**
-     * This method initializes the patient code search text field.
-     *
-     * @return patientCodeField (JTextField)
-     */
-    private JTextField getPatientCodeField() {
-        if (patientCodeField == null) {
-            patientCodeField = new JTextField();
-            patientCodeField.setPreferredSize(new Dimension(215, 30));
+	 * This method initializes the patient code search text field.
+	 *
+	 * @return patientCodeField (JTextField)
+	 */
+	private JTextField getPatientCodeField() {
+		if (patientCodeField == null) {
+			patientCodeField = new JTextField();
+			patientCodeField.setPreferredSize(new Dimension(215, 30));
 
 
-        }
-        return patientCodeField;
-    }
+		}
+		return patientCodeField;
+	}
 
 
 	/**

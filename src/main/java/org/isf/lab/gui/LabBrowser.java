@@ -26,6 +26,8 @@ import static org.isf.utils.Constants.DATE_TIME_FORMATTER;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -406,8 +408,25 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 		if (patientCodeField == null) {
 			patientCodeField = new JTextField();
 			patientCodeField.setPreferredSize(new Dimension(215, 30));
+			patientCodeField.addKeyListener(new KeyListener() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					int key = e.getKeyCode();
+					if (key == KeyEvent.VK_ENTER) {
+						model = new LabBrowsingModel(patientCodeField.getText());
+						model.fireTableDataChanged();
+						jTable.updateUI();
+					}
+				}
 
+				@Override
+				public void keyReleased(KeyEvent e) {
+				}
 
+				@Override
+				public void keyTyped(KeyEvent e) {
+				}
+			});
 		}
 		return patientCodeField;
 	}
@@ -508,6 +527,30 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
                     }
                 }
                 pLabs = labManager.getLaboratory(exam, dateFrom.atStartOfDay(), dateTo.atStartOfDay(), pat);
+            } catch (OHServiceException e) {
+                pLabs = new ArrayList<>();
+                OHServiceExceptionUtil.showMessages(e);
+            }
+        }
+
+		public LabBrowsingModel(String patid) {
+            try {
+                Patient pat;
+                if (patid.isEmpty()) {
+                    pat = null;
+                } else {
+                    try {
+                        pat = patManager.getPatientById(Integer.parseInt(patid));
+                    } catch (NumberFormatException e) {
+                        MessageDialog.error(null, "angal.patient.insertvalidage.msg");
+                        pat = null;
+                    }
+                }
+				if (pat == null) {
+                	pLabs = new ArrayList<>();
+				} else {
+					pLabs = labManager.getLaboratory(pat);
+				}
             } catch (OHServiceException e) {
                 pLabs = new ArrayList<>();
                 OHServiceExceptionUtil.showMessages(e);

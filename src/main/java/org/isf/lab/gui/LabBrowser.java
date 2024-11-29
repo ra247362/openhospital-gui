@@ -364,8 +364,9 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 		if (jSelectionPanel == null) {
 			jSelectionPanel = new JPanel();
 			jSelectionPanel.setPreferredSize(new Dimension(225, pfrmHeight));
-			jSelectionPanel.add(new JLabel(MessageBundle.getMessage("angal.lab.selectanexam")));
+			jSelectionPanel.add(new JLabel(MessageBundle.getMessage("angal.lab.selectapatient")));
 			jSelectionPanel.add(getPatientCodeField());
+			jSelectionPanel.add(new JLabel(MessageBundle.getMessage("angal.lab.selectanexam")));
 			jSelectionPanel.add(getComboExams());
 			jSelectionPanel.add(getDateFilterPanel());
 			jSelectionPanel.add(getFilterButton());
@@ -522,7 +523,7 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
                     try {
                         pat = patManager.getPatientById(Integer.parseInt(patid));
                     } catch (NumberFormatException e) {
-                        MessageDialog.error(null, "angal.patient.insertvalidage.msg");
+                        MessageDialog.error(null, "angal.lab.insertvalidpatientid.msg");
                         pat = null;
                     }
                 }
@@ -542,7 +543,7 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
                     try {
                         pat = patManager.getPatientById(Integer.parseInt(patid));
                     } catch (NumberFormatException e) {
-                        MessageDialog.error(null, "angal.patient.insertvalidage.msg");
+                        MessageDialog.error(null, "angal.lab.insertvalidpatientid.msg");
                         pat = null;
                     }
                 }

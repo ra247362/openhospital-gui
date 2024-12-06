@@ -364,7 +364,7 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 		if (jSelectionPanel == null) {
 			jSelectionPanel = new JPanel();
 			jSelectionPanel.setPreferredSize(new Dimension(225, pfrmHeight));
-			jSelectionPanel.add(new JLabel(MessageBundle.getMessage("angal.lab.selectapatient")));
+			jSelectionPanel.add(new JLabel(MessageBundle.getMessage("angal.lab.searchbycodepatientpressenter")));
 			jSelectionPanel.add(getPatientCodeField());
 			jSelectionPanel.add(new JLabel(MessageBundle.getMessage("angal.lab.selectanexam")));
 			jSelectionPanel.add(getComboExams());

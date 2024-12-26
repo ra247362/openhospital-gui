@@ -515,29 +515,24 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 		private static final long serialVersionUID = 1L;
 
         public LabBrowsingModel(String exam, LocalDate dateFrom, LocalDate dateTo, String patid) {
-			boolean exists = true;
             try {
-                Patient pat;
-                if (patid.isEmpty()) {
-                    pat = null;
-                } else {
-                    try {
-                        pat = patManager.getPatientById(Integer.parseInt(patid));
-						exists = pat == null ? false : true;
-                    } catch (NumberFormatException e) {
-                        MessageDialog.error(null, "angal.lab.insertvalidpatientid.msg");
-                        pat = null;
-                    }
-                }
-				if (exists) {
-                	pLabs = labManager.getLaboratory(exam, dateFrom.atStartOfDay(), dateTo.atStartOfDay(), pat);
+				if (!patid.isEmpty()) {
+					Patient pat = patManager.getPatientById(Integer.parseInt(patid));
+					if (pat == null) {
+						pLabs = new ArrayList<>();;
+					} else {
+						pLabs = labManager.getLaboratory(exam, dateFrom.atStartOfDay(), dateTo.atStartOfDay(), pat);
+					}
 				} else {
-                	pLabs = new ArrayList<>();
+					pLabs = labManager.getLaboratory(exam, dateFrom.atStartOfDay(), dateTo.atStartOfDay(), null);
 				}
             } catch (OHServiceException e) {
                 pLabs = new ArrayList<>();
                 OHServiceExceptionUtil.showMessages(e);
-            }
+            } catch (NumberFormatException e) {
+				pLabs = new ArrayList<>();
+				MessageDialog.error(null, "angal.lab.insertvalidpatientid.msg");
+			}
         }
 
 		public LabBrowsingModel(String patid) {

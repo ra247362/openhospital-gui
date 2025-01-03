@@ -537,26 +537,23 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 
 		public LabBrowsingModel(String patid) {
             try {
-                Patient pat;
-                if (patid.isEmpty()) {
-                    pat = null;
-                } else {
-                    try {
-                        pat = patManager.getPatientById(Integer.parseInt(patid));
-                    } catch (NumberFormatException e) {
-                        MessageDialog.error(null, "angal.lab.insertvalidpatientid.msg");
-                        pat = null;
-                    }
-                }
-				if (pat == null) {
-                	pLabs = new ArrayList<>();
+				if (!patid.isEmpty()) {
+					Patient pat = patManager.getPatientById(Integer.parseInt(patid));
+					if (pat == null) {
+						pLabs = new ArrayList<>();
+					} else {
+						pLabs = labManager.getLaboratory(pat);
+					}
 				} else {
-					pLabs = labManager.getLaboratory(pat);
+					pLabs = new ArrayList<>();
 				}
             } catch (OHServiceException e) {
                 pLabs = new ArrayList<>();
                 OHServiceExceptionUtil.showMessages(e);
-            }
+            } catch (NumberFormatException e) {
+				pLabs = new ArrayList<>();
+				MessageDialog.error(null, "angal.lab.insertvalidpatientid.msg");
+			}
         }
 
 		public LabBrowsingModel() {

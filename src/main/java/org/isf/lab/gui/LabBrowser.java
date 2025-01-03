@@ -519,7 +519,7 @@ public class LabBrowser extends ModalJFrame implements LabListener, LabEditListe
 				if (!patid.isEmpty()) {
 					Patient pat = patManager.getPatientById(Integer.parseInt(patid));
 					if (pat == null) {
-						pLabs = new ArrayList<>();;
+						pLabs = new ArrayList<>();
 					} else {
 						pLabs = labManager.getLaboratory(exam, dateFrom.atStartOfDay(), dateTo.atStartOfDay(), pat);
 					}
